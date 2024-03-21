@@ -7,14 +7,15 @@ import org.testng.annotations.*;
 
 public class SetUpDriver {
 	WebDriver driver;
-	String projectPath = System.getProperty("userdir");
+	String projectPath = System.getProperty("user.dir");
 	
 	@BeforeClass
 	public void BeforeClass() {
+	//	System.setProperty("webdriver.chrome.driver",projectPath + "\\webDriver\\chromedriver.exe");)
 		driver =  new ChromeDriver();
 	}
 	@Test
 	public void TC_01() {
-		driver.get("");
+		driver.get("https://dev.ecomnet.app/");
 	}
 }
