@@ -23,13 +23,13 @@ public class SetUpDriver {
 		System.setProperty("webdriver.edge.driver", projectPath +"\\webDriver\\msedgedriver.exe");
 		 driver = new EdgeDriver();
 		 driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-		 driver.get("https://dev.ecomnet.app/");
 		 driver.manage().window().maximize();
 		 //act = new Actions(driver);
 		 
 	}
 	@Test
 	public void TC_01_VerifyUsernameIsTrue() throws InterruptedException {
+		 driver.get("https://dev.ecomnet.app/");
 		 WebElement txtUsername = driver.findElement(By.xpath("//input[@name = 'email']"));
 		 WebElement txtPassword = driver.findElement(By.xpath("//input[@name = 'password']"));
 		 WebElement btnLogin = driver.findElement(By.xpath("//button/span[text()= 'Đăng nhập']"));
@@ -51,6 +51,7 @@ public class SetUpDriver {
 	}
 	@Test
 	public void TC_02_Search() throws InterruptedException {
+		driver.get("https://dev.ecomnet.app/");
 		driver.findElement(By.xpath("//input[@name = 'email']")).sendKeys("bkaadmin");;
 		driver.findElement(By.xpath("//input[@name = 'password']")).sendKeys("qazwsx");;
 		driver.findElement(By.xpath("//button/span[text()= 'Đăng nhập']")).click();
@@ -71,6 +72,44 @@ public class SetUpDriver {
 		driver.findElement(By.xpath("//span[text() = ' Lưu ']")).click();
 		Assert.assertFalse(driver.findElement(By.xpath("//h2[text()= 'Filter danh sách']")).isDisplayed());
 	}
+	
+	@Test
+	public void TC_03_HRMTest() throws InterruptedException {
+		Random rad = new Random();
+		String number = String.valueOf(rad.nextInt(9999));
+		String username = "Khoatran"+number;
+		String password = "Khoa0195@";
+		String userID;
+		driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
+		driver.findElement(By.name("username")).sendKeys("Admin");
+		driver.findElement(By.name("password")).sendKeys("admin123");
+		driver.findElement(By.xpath("//button[contains(string(),' Login ')]")).click();
+		driver.findElement(By.xpath("//span[text()='PIM']")).click();
+		driver.findElement(By.xpath("//button[text()=' Add ']")).click();
+		driver.findElement(By.name("firstName")).sendKeys("Tran");
+		driver.findElement(By.name("middleName")).sendKeys("Dang");
+		driver.findElement(By.name("lastName")).sendKeys("aohKT");
+		userID = driver.findElement(By.xpath("//label[text()='Employee Id']/parent::div/following-sibling::div/input")).getAttribute("value");
+		driver.findElement(By.xpath("//p[text()='Create Login Details']/parent::div//span")).click();
+		driver.findElement(By.xpath("//label[contains(string(),'Username')]/parent::div/parent::div//input")).sendKeys(username);
+		driver.findElement(By.xpath("//label[contains(string(),'Password')]/parent::div/parent::div//input")).sendKeys(password);
+		driver.findElement(By.xpath("//label[contains(string(),'Confirm Password')]/parent::div/parent::div//input")).sendKeys(password);
+		driver.findElement(By.xpath("//button[contains(string(),'Save')]")).click();
+		Thread.sleep(15000);
+		driver.findElement(By.cssSelector(".oxd-userdropdown-name")).click();
+		driver.findElement(By.xpath("//ul[@role = 'menu']//a[text() = 'Logout']")).click();
+		driver.findElement(By.name("username")).sendKeys(username);
+		driver.findElement(By.name("password")).sendKeys(password);
+		driver.findElement(By.xpath("//button[contains(string(),' Login ')]")).click();
+		driver.findElement(By.xpath("//span[text() = 'My Info']")).click();
+		Thread.sleep(2000);
+		Assert.assertEquals(driver.findElement(By.xpath("//label[text()='Employee Id']/parent::div/parent::div//input")).getAttribute("value"),userID);
+		Assert.assertEquals(driver.findElement(By.xpath("//input[@name = 'firstName']")).getAttribute("value"), "Tran");
+		Assert.assertEquals(driver.findElement(By.cssSelector("input.orangehrm-middlename")).getAttribute("value"), "Dang");
+		Assert.assertEquals(driver.findElement(By.cssSelector("input.orangehrm-lastname")).getAttribute("value"),"aohKT");
+		
+	}
+	
 	@AfterClass
 	public void afterClass() {
 		driver.quit();
