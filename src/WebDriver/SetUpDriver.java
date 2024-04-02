@@ -4,30 +4,33 @@ package WebDriver;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
 public class SetUpDriver {
 	WebDriver driver;
 	String projectPath = System.getProperty("user.dir");
-	//Actions act;
+	JavascriptExecutor jsExcutor;
 	
 	@BeforeClass
 	public void beforeClass() {
 		System.setProperty("webdriver.edge.driver", projectPath +"\\webDriver\\msedgedriver.exe");
 		 driver = new EdgeDriver();
+		 jsExcutor = (JavascriptExecutor) driver;
 		 driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		 driver.manage().window().maximize();
 		 //act = new Actions(driver);
 		 
 	}
-	@Test
+	//@Test
 	public void TC_01_VerifyUsernameIsTrue() throws InterruptedException {
 		 driver.get("https://dev.ecomnet.app/");
 		 WebElement txtUsername = driver.findElement(By.xpath("//input[@name = 'email']"));
@@ -49,32 +52,39 @@ public class SetUpDriver {
 		 driver.findElement(By.cssSelector(".cursor-pointer")).click();
 		 driver.findElement(By.xpath("//a[text() = 'Đăng xuất']")).click();
 	}
-	@Test
-	public void TC_02_Search() throws InterruptedException {
-		driver.get("https://dev.ecomnet.app/");
-		driver.findElement(By.xpath("//input[@name = 'email']")).sendKeys("bkaadmin");;
-		driver.findElement(By.xpath("//input[@name = 'password']")).sendKeys("qazwsx");;
-		driver.findElement(By.xpath("//button/span[text()= 'Đăng nhập']")).click();
-		driver.findElement(By.xpath("//span[text()='Thư viện số']")).click();
-		driver.findElement(By.xpath("//span[text()='Danh sách nội dung số']")).click();
-		Thread.sleep(3000);
-		driver.findElement(By.xpath("//button[text() = ' Filter ']")).click();
-		driver.findElement(By.xpath("//label[text()= 'Bán nội dung']/parent::div//input[@placeholder = 'Select']")).click();
-		List<WebElement> typeList = new ArrayList<>();
-		typeList = driver.findElements(By.cssSelector("#el-id-8321-806 li span"));
-		
-		for(WebElement tmp : typeList) {
-			if(tmp.getText().equals("Có bán nội dung")) {
-				tmp.click();
-				System.out.print("hi");
-			}
-		}
-		driver.findElement(By.xpath("//span[text() = ' Lưu ']")).click();
-		Assert.assertFalse(driver.findElement(By.xpath("//h2[text()= 'Filter danh sách']")).isDisplayed());
+	//@Test
+	public void TC_02_DefaultDropdown() throws InterruptedException {
+		driver.get("https://demo.nopcommerce.com/");
+		driver.findElement(By.xpath("//a[text() = 'Register']")).click();
+		Thread.sleep(2000);
+		WebElement dropdownDay = driver.findElement(By.xpath("//select[@name = 'DateOfBirthDay']"));
+		Select selectDay = new Select(dropdownDay);
+		selectDay.selectByValue("27");
+		Thread.sleep(1000);
+		Assert.assertEquals(selectDay.getFirstSelectedOption().getText(), "27");
+		WebElement dropdownMonth = driver.findElement(By.xpath("//select[@name = 'DateOfBirthMonth']"));
+		Select selectMonth = new Select(dropdownMonth);
+		selectMonth.selectByVisibleText("February");
+		Assert.assertEquals(selectMonth.getFirstSelectedOption().getText(), "February");
 	}
 	
-	@Test
-	public void TC_03_HRMTest() throws InterruptedException {
+	//@Test
+	public void TC_03_CustomDropdown() throws InterruptedException {
+		driver.get("https://cmb-merchant-test2.intelnet.vn/auth/login");
+		driver.findElement(By.cssSelector("input#email")).sendKeys("test2.cmb@intelnet.vn");
+		driver.findElement(By.cssSelector("input.InputPassword")).sendKeys("Aa@123456");
+		driver.findElement(By.xpath("//span[text() = 'Đăng nhập']")).click();
+		Thread.sleep(10000);
+		WebElement dropdown = driver.findElement(By.cssSelector("div.css-2b097c-container"));
+		dropdown.click();
+		List<WebElement> dropdownValue = driver.findElements(By.cssSelector("div.css-1kyev75-menu div.TableFilterInputSelect__option"));
+		System.out.println(dropdownValue.size());
+		selectItem(dropdown,dropdownValue, "Chi nhánh Trần Bình Trọng");
+		Assert.assertEquals(dropdown.getText(), "Chi nhánh Trần Bình Trọng");
+	}
+	
+	//@Test
+	public void TC_04_HRMTest() throws InterruptedException {
 		Random rad = new Random();
 		String number = String.valueOf(rad.nextInt(9999));
 		String username = "Khoatran"+number;
@@ -110,8 +120,49 @@ public class SetUpDriver {
 		
 	}
 	
+	//@Test
+	public void TC_05_RadioButton() throws InterruptedException {
+		driver.get("https://material.angularjs.org/latest/demo/radioButton");	
+		Thread.sleep(5000);
+		List<WebElement> FavoriteFruitList = driver.findElements(By.xpath("//label[text() ='Favorite Fruit:']/parent::p/following-sibling::md-radio-group[@aria-labelledby='favoriteFruit']//md-radio-button"));
+		for(WebElement item : FavoriteFruitList) {
+			if(item.getAttribute("value").equals("Banana")) {
+				item.click();
+			}
+		}
+		
+		Assert.assertEquals(driver.findElement(By.xpath("//label[text() ='Favorite Fruit:']/parent::p/following-sibling::md-radio-group[@aria-labelledby='favoriteFruit']//md-radio-button[@value='Banana']")).getAttribute("aria-checked"),"true");
+		
+		
+	}
+	
+	@Test 
+	public void TC_06_DefaultCheckBoxJsExcutor() throws InterruptedException{
+		driver.get("https://material.angularjs.org/latest/demo/checkbox");
+		WebElement checkbox1 = driver.findElement(By.xpath("//legend[text()='Using <ng-model>']/parent::fieldset//md-checkbox[@aria-label='Checkbox 1']"));
+		Thread.sleep(1000);
+		Assert.assertEquals(checkbox1.getAttribute("aria-checked"), "true");
+		WebElement checkbox2 = driver.findElement(By.xpath("//legend[text()='Using <ng-model>']/parent::fieldset//md-checkbox[@aria-label='Checkbox 2']"));
+		Assert.assertEquals(checkbox2.getAttribute("aria-checked"), "false");
+		jsExcutor.executeScript("arguments[0].click();", checkbox2);
+		Thread.sleep(1000);
+		Assert.assertEquals(checkbox2.getAttribute("aria-checked"), "true");
+		WebElement checkboxDisable =  driver.findElement(By.xpath("//legend[text()='Using <ng-model>']/parent::fieldset//md-checkbox[@aria-label='Disabled checkbox']"));
+	}
+	
 	@AfterClass
 	public void afterClass() {
 		driver.quit();
 	}
+	
+	public void selectItem(WebElement dropdown, List<WebElement> itemList, String itemValue) {
+		for(WebElement item : itemList) {
+			if(item.getText().equals(itemValue)) {
+				item.click();
+				break;
+			}
+		}
+	}
 }
+
+
