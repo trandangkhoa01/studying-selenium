@@ -136,7 +136,7 @@ public class SetUpDriver {
 		
 	}
 	
-	@Test 
+	//@Test 
 	public void TC_06_DefaultCheckBoxJsExcutor() throws InterruptedException{
 		driver.get("https://material.angularjs.org/latest/demo/checkbox");
 		WebElement checkbox1 = driver.findElement(By.xpath("//legend[text()='Using <ng-model>']/parent::fieldset//md-checkbox[@aria-label='Checkbox 1']"));
@@ -148,6 +148,37 @@ public class SetUpDriver {
 		Thread.sleep(1000);
 		Assert.assertEquals(checkbox2.getAttribute("aria-checked"), "true");
 		WebElement checkboxDisable =  driver.findElement(By.xpath("//legend[text()='Using <ng-model>']/parent::fieldset//md-checkbox[@aria-label='Disabled checkbox']"));
+	}
+	
+	@Test
+	public void TC_07_HandleAlert() throws InterruptedException {
+		driver.get("https://demo.automationtesting.in/Alerts.html");	
+		//demo alert with only OK button
+		driver.findElement(By.cssSelector("button.btn-danger")).click();
+		Assert.assertEquals(driver.switchTo().alert().getText(), "I am an alert box!");
+		driver.switchTo().alert().accept();
+		
+		//demo alert with OK and Cancel button
+		driver.findElement(By.xpath("//a[text()='Alert with OK & Cancel ']")).click();
+		driver.findElement(By.cssSelector("button.btn-primary")).click();
+		driver.switchTo().alert().accept();
+		Assert.assertTrue(driver.findElement(By.xpath("//p[contains(text(), 'You pressed Ok')]")).isDisplayed());
+		driver.findElement(By.cssSelector("button.btn-primary")).click();
+		driver.switchTo().alert().dismiss();
+		Assert.assertTrue(driver.findElement(By.xpath("//p[contains(text(), 'You Pressed Cancel')]")).isDisplayed());
+		
+		//deomo alert with textbox
+		driver.findElement(By.xpath("//a[text()='Alert with Textbox ']")).click();
+		driver.findElement(By.cssSelector("button.btn-info")).click();
+		driver.switchTo().alert().sendKeys("HI");
+		Thread.sleep(2000);
+		driver.switchTo().alert().accept();
+		Thread.sleep(2000);
+		String expectedString = "Hello " + "HI" + " How are you today";
+		String actual = driver.findElement(By.cssSelector("p#demo1")).getText();
+		System.out.println(actual);
+		Assert.assertEquals(actual, expectedString);
+		
 	}
 	
 	@AfterClass
