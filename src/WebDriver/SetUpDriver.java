@@ -10,6 +10,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
@@ -19,6 +20,7 @@ public class SetUpDriver {
 	WebDriver driver;
 	String projectPath = System.getProperty("user.dir");
 	JavascriptExecutor jsExcutor;
+	Actions act;
 	
 	@BeforeClass
 	public void beforeClass() {
@@ -27,7 +29,7 @@ public class SetUpDriver {
 		 jsExcutor = (JavascriptExecutor) driver;
 		 driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		 driver.manage().window().maximize();
-		 //act = new Actions(driver);
+		 act = new Actions(driver);
 		 
 	}
 	//@Test
@@ -150,7 +152,7 @@ public class SetUpDriver {
 		WebElement checkboxDisable =  driver.findElement(By.xpath("//legend[text()='Using <ng-model>']/parent::fieldset//md-checkbox[@aria-label='Disabled checkbox']"));
 	}
 	
-	@Test
+	//@Test
 	public void TC_07_HandleAlert() throws InterruptedException {
 		driver.get("https://demo.automationtesting.in/Alerts.html");	
 		//demo alert with only OK button
@@ -179,6 +181,45 @@ public class SetUpDriver {
 		System.out.println(actual);
 		Assert.assertEquals(actual, expectedString);
 		
+	}
+	
+	
+	//@Test
+	public void TC_08_Action() {
+		driver.get("https://www.fahasa.com/");
+		act.moveToElement(driver.findElement(By.cssSelector("span.icon_menu"))).perform();
+		act.moveToElement(driver.findElement(By.xpath("//span[text() = 'Sách Trong Nước' ]"))).perform();
+		jsExcutor.executeScript("arguments[0].click();", driver.findElement(By.xpath("//div[@class = 'dropdown-menu-inner']//span[text() ='KINH TẾ']/ancestor::h3/following-sibling::ul//a[text() ='Quản Trị - Lãnh Đạo']")));
+		Assert.assertTrue(driver.findElement(By.xpath("//strong[text() = 'Quản Trị - Lãnh Đạo']")).isDisplayed());
+		
+	}
+	
+	//@Test
+	public void TC_09_Popup() throws InterruptedException {
+		driver.get("https://ngoaingu24h.vn/");	
+		Thread.sleep(2000);
+		driver.findElement(By.cssSelector("button.login_")).click();
+		Thread.sleep(2000);
+		Assert.assertTrue(driver.findElement(By.cssSelector("div#modal-login-v1.modal.fade.in")).isDisplayed());
+	
+	}
+	
+	@Test
+	public void TC10_Popup2() throws InterruptedException {
+		driver.get("https://dev.ecomnet.app/");
+		WebElement txtUsername = driver.findElement(By.xpath("//input[@name = 'email']"));
+		WebElement txtPassword = driver.findElement(By.xpath("//input[@name = 'password']"));
+		WebElement btnLogin = driver.findElement(By.xpath("//button/span[text()= 'Đăng nhập']"));
+		txtUsername.sendKeys("bkaadmin");
+		txtPassword.sendKeys("qazwsx");
+		btnLogin.click();
+		driver.findElement(By.xpath("//span[text() = 'Danh sách nhóm']")).click();
+		Assert.assertFalse(driver.findElement(By.cssSelector("div#kt_modal_add_group")).isDisplayed());
+		driver.findElement(By.xpath("//button[text() =' Tạo nhóm ']")).click();
+		Thread.sleep(2000);
+		Assert.assertTrue(driver.findElement(By.cssSelector("div#kt_modal_add_group")).isDisplayed());
+		driver.findElement(By.cssSelector("input[placeholder = 'Tên nhóm']")).sendKeys("Group Test");
+		driver.findElement(By.xpath("//span[text() ='Tạo nhóm']")).click();
 	}
 	
 	@AfterClass
