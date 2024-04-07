@@ -81,8 +81,9 @@ public class SetUpDriver {
 		dropdown.click();
 		List<WebElement> dropdownValue = driver.findElements(By.cssSelector("div.css-1kyev75-menu div.TableFilterInputSelect__option"));
 		System.out.println(dropdownValue.size());
-		selectItem(dropdown,dropdownValue, "Chi nhánh Trần Bình Trọng");
+		selectItem(dropdownValue, "Chi nhánh Trần Bình Trọng");
 		Assert.assertEquals(dropdown.getText(), "Chi nhánh Trần Bình Trọng");
+		Thread.sleep(3000);
 	}
 	
 	//@Test
@@ -204,7 +205,7 @@ public class SetUpDriver {
 	
 	}
 	
-	@Test
+	//@Test
 	public void TC10_Popup2() throws InterruptedException {
 		driver.get("https://dev.ecomnet.app/");
 		WebElement txtUsername = driver.findElement(By.xpath("//input[@name = 'email']"));
@@ -222,15 +223,82 @@ public class SetUpDriver {
 		driver.findElement(By.xpath("//span[text() ='Tạo nhóm']")).click();
 	}
 	
+	//@Test
+	public void TC_11_HandelDropdownECN() throws InterruptedException {
+		driver.get("https://dev.ecomnet.app/");
+		WebElement txtUsername = driver.findElement(By.xpath("//input[@name = 'email']"));
+		WebElement txtPassword = driver.findElement(By.xpath("//input[@name = 'password']"));
+		WebElement btnLogin = driver.findElement(By.xpath("//button/span[text()= 'Đăng nhập']"));
+		txtUsername.sendKeys("bkaadmin");
+		txtPassword.sendKeys("qazwsx");
+		btnLogin.click();
+		driver.findElement(By.xpath("//span[text() = 'Danh sách nhóm']")).click();
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("//button[contains(text(),' Filter ')]")).click();
+		Thread.sleep(3000);
+		WebElement DropdownType = driver.findElement(By.xpath("//label[text() ='Loại']/parent::div//input"));
+		String id = DropdownType.getAttribute("id");
+		DropdownType.click();
+		Thread.sleep(3000);
+		String listId = splitAndConcatString(id);
+		String xpath = "//div[contains(@id , '" + listId + "') and @aria-hidden = 'false']//li/span";
+		System.out.println(xpath);
+		List<WebElement> typeList =  driver.findElements(By.xpath(xpath));
+		System.out.println(typeList.size());
+		selectItem(typeList,"Riêng tư");
+		Assert.assertEquals(DropdownType.getAttribute("value"),"Riêng tư");
+		driver.findElement(By.xpath("//span[text() = ' Lưu ']")).click();
+		Thread.sleep(3000);
+	}
+	
+	@Test
+	public void TC_12_HandlePopupECN2() throws InterruptedException {
+		driver.get("https://dev.ecomnet.app/");
+		WebElement txtUsername = driver.findElement(By.xpath("//input[@name = 'email']"));
+		WebElement txtPassword = driver.findElement(By.xpath("//input[@name = 'password']"));
+		WebElement btnLogin = driver.findElement(By.xpath("//button/span[text()= 'Đăng nhập']"));
+		txtUsername.sendKeys("bkaadmin");
+		txtPassword.sendKeys("qazwsx");
+		btnLogin.click();
+		driver.findElement(By.xpath("//span[text() = 'Thư viện số']")).click();
+		driver.findElement(By.xpath("//span[text() = 'Danh sách nội dung số']")).click();
+		Thread.sleep(1000);
+		Assert.assertFalse(driver.findElement(By.cssSelector("div#kt_modal_new_media div.modal-content")).isDisplayed());
+		driver.findElement(By.xpath("//button[text() = ' Thêm mới ']")).click();
+		Thread.sleep(500);
+		Assert.assertTrue(driver.findElement(By.cssSelector("div#kt_modal_new_media div.modal-content")).isDisplayed());
+		driver.findElement(By.cssSelector("input[placeholder = 'Tiêu đề...']")).sendKeys("Media text");
+		WebElement typeDropdown = driver.findElement(By.xpath("//span[text() ='Định dạng']/parent::label/following-sibling::div[@class = 'el-select']//input"));
+		String typeDropdownId = typeDropdown.getAttribute("id");
+		typeDropdown.click();
+		String typeListId = splitAndConcatString(typeDropdownId);
+		String xpath = "//div[contains(@id , '" + typeListId + "') and @aria-hidden = 'false']//li/span";
+		List<WebElement> typeList = driver.findElements(By.xpath(xpath));
+		System.out.println(typeList.size());
+		selectItem(typeList, "PHOTO");
+		Assert.assertEquals(typeDropdown.getAttribute("value"), "PHOTO");
+		Thread.sleep(500);
+		driver.findElement(By.cssSelector("div#kt_modal_new_media_close span")).click();
+		Thread.sleep(500);
+		Assert.assertFalse(driver.findElement(By.cssSelector("div#kt_modal_new_media div.modal-content")).isDisplayed());
+		
+	}
+	
 	@AfterClass
 	public void afterClass() {
 		driver.quit();
 	}
 	
-	public void selectItem(WebElement dropdown, List<WebElement> itemList, String itemValue) {
+	public String splitAndConcatString(String string) {
+		String[] output = string.split("-");
+		String result = output[0].concat("-").concat(output[1]).concat("-").concat(output[2]);
+		return result;
+		
+	}
+	public void selectItem(List<WebElement> itemList, String itemValue) {
 		for(WebElement item : itemList) {
 			if(item.getText().equals(itemValue)) {
-				item.click();
+				jsExcutor.executeScript("arguments[0].click()", item);
 				break;
 			}
 		}
