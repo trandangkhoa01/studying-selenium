@@ -251,7 +251,7 @@ public class SetUpDriver {
 		Thread.sleep(3000);
 	}
 	
-	@Test
+	//@Test
 	public void TC_12_HandlePopupECN2() throws InterruptedException {
 		driver.get("https://dev.ecomnet.app/");
 		WebElement txtUsername = driver.findElement(By.xpath("//input[@name = 'email']"));
@@ -274,7 +274,6 @@ public class SetUpDriver {
 		String typeListId = splitAndConcatString(typeDropdownId);
 		String xpath = "//div[contains(@id , '" + typeListId + "') and @aria-hidden = 'false']//li/span";
 		List<WebElement> typeList = driver.findElements(By.xpath(xpath));
-		System.out.println(typeList.size());
 		selectItem(typeList, "PHOTO");
 		Assert.assertEquals(typeDropdown.getAttribute("value"), "PHOTO");
 		Thread.sleep(500);
@@ -284,6 +283,41 @@ public class SetUpDriver {
 		
 	}
 	
+	//@Test
+	public void TC_13_Handle_Popup_Not_In_DOM_TIKI() throws InterruptedException {
+		driver.get("https://tiki.vn/");
+		By popupCss = By.cssSelector("div[role ='dialog']");
+		Assert.assertEquals(driver.findElements(popupCss).size(), 0);
+		driver.findElement(By.xpath("//span[text() = 'Tài khoản']")).click();
+		Thread.sleep(2000);
+		Assert.assertEquals(driver.findElements(popupCss).size(), 1);
+		Assert.assertTrue(driver.findElement(popupCss).isDisplayed());
+		driver.findElement(By.cssSelector("p.login-with-email")).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath("//button[text() = 'Đăng nhập']")).click();
+		Assert.assertTrue(driver.findElement(By.xpath("//span[@class = 'error-mess' and text() = 'Email không được để trống']")).isDisplayed());
+		Assert.assertTrue(driver.findElement(By.xpath("//span[@class = 'error-mess' and text() = 'Mật khẩu không được để trống']")).isDisplayed());
+		Thread.sleep(1000);
+	}
+	
+	@Test
+	public void TC_14_Handle_Random_Popup() throws InterruptedException {
+		driver.get("https://dehieu.vn/");
+		Thread.sleep(6000);
+		if(driver.findElement(By.cssSelector("div.modal-dialog div.modal-content")).isDisplayed()) {
+			driver.findElement(By.cssSelector(" button.close")).click();
+			Thread.sleep(1000);
+		}
+		
+		driver.findElement(By.xpath("//a[text() =' Tất cả khóa học']")).click();
+		Thread.sleep(1000);
+		driver.findElement(By.cssSelector("input.search-form")).sendKeys("Thiết kế tủ điện");
+		driver.findElement(By.cssSelector("button.header-search")).click();
+		Thread.sleep(1000);
+		Assert.assertEquals(driver.findElements(By.cssSelector("div.course-item-image")).size(), 1);
+		
+	}
+
 	@AfterClass
 	public void afterClass() {
 		driver.quit();
