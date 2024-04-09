@@ -300,7 +300,7 @@ public class SetUpDriver {
 		Thread.sleep(1000);
 	}
 	
-	@Test
+	//@Test
 	public void TC_14_Handle_Random_Popup() throws InterruptedException {
 		driver.get("https://dehieu.vn/");
 		Thread.sleep(6000);
@@ -316,6 +316,38 @@ public class SetUpDriver {
 		Thread.sleep(1000);
 		Assert.assertEquals(driver.findElements(By.cssSelector("div.course-item-image")).size(), 1);
 		
+	}
+	
+	//@Test
+	public void TC_15_Handle_Frame() throws InterruptedException {
+		driver.get("https://skills.kynaenglish.vn/");
+		driver.switchTo().frame(driver.findElement(By.cssSelector("iframe#cs_chat_iframe")));
+		jsExcutor.executeScript("arguments[0].click()", driver.findElement(By.cssSelector("div.button_text")));
+		driver.findElement(By.cssSelector("input.input_name")).sendKeys("Khoa Vip Pro");
+		driver.findElement(By.cssSelector("input.input_phone ")).sendKeys("0612542147");
+		new Select(driver.findElement(By.cssSelector("select#serviceSelect"))).selectByVisibleText("TƯ VẤN TUYỂN SINH");
+		driver.findElement(By.name("message")).sendKeys("Hi am Khoa");
+		Thread.sleep(3000);
+		driver.switchTo().defaultContent();
+		Assert.assertTrue(driver.findElement(By.cssSelector("div.fancybox-skin")).isDisplayed());
+	}
+	
+	@Test
+	public void TC_16_Handle_Tab() throws InterruptedException {
+		driver.get("https://automationfc.github.io/basic-form/");	
+		driver.findElement(By.xpath("//a[text() = 'GOOGLE']")).click();
+		switchToWindown("Google");
+		driver.findElement(By.xpath("//textarea[@name = 'q']")).sendKeys("Khoa");
+		Thread.sleep(3000);
+		switchToWindown("Selenium WebDriver");
+		driver.findElement(By.xpath("//a[text() = 'FACEBOOK']")).click();
+		switchToWindown("Facebook - Đăng nhập hoặc đăng ký");
+		driver.findElement(By.cssSelector("input#email")).sendKeys("khoooooooo");
+		driver.findElement(By.cssSelector("input#pass")).sendKeys("khoooooooo");
+		Thread.sleep(3000);
+		switchToWindown("Selenium WebDriver");
+		closeWindown("Selenium WebDriver");
+		Thread.sleep(3000);
 	}
 
 	@AfterClass
@@ -337,6 +369,29 @@ public class SetUpDriver {
 			}
 		}
 	}
+	
+	
+	public void switchToWindown(String pageTitle) {
+		Set<String> allPageID = driver.getWindowHandles();
+		for (String id : allPageID) {
+			driver.switchTo().window(id);
+			if(driver.getTitle().equals(pageTitle)) {
+				break;
+			}
+		}
+	}
+	
+	public void closeWindown(String pageTitle) {
+		Set<String> allPageID = driver.getWindowHandles();
+		for (String id : allPageID) {
+			driver.switchTo().window(id);
+			if(!driver.getTitle().equals(pageTitle)) {
+				driver.close();
+			}
+		}
+		
+	}
+	
 }
 
 
