@@ -1,60 +1,66 @@
 package WebDriver;
 
 //import java.util.ArrayList;
-import java.util.*;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 public class SetUpDriver {
 	WebDriver driver;
 	String projectPath = System.getProperty("user.dir");
 	JavascriptExecutor jsExcutor;
 	Actions act;
-	
+
 	@BeforeClass
 	public void beforeClass() {
-		System.setProperty("webdriver.edge.driver", projectPath +"\\webDriver\\msedgedriver.exe");
-		 driver = new EdgeDriver();
-		 jsExcutor = (JavascriptExecutor) driver;
-		 driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-		 driver.manage().window().maximize();
-		 act = new Actions(driver);
-		 
+		System.setProperty("webdriver.edge.driver", projectPath + "\\webDriver\\msedgedriver.exe");
+		driver = new EdgeDriver();
+		jsExcutor = (JavascriptExecutor) driver;
+		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		driver.manage().window().maximize();
+		act = new Actions(driver);
+
 	}
-	//@Test
+
+	// @Test
 	public void TC_01_VerifyUsernameIsTrue() throws InterruptedException {
-		 driver.get("https://dev.ecomnet.app/");
-		 WebElement txtUsername = driver.findElement(By.xpath("//input[@name = 'email']"));
-		 WebElement txtPassword = driver.findElement(By.xpath("//input[@name = 'password']"));
-		 WebElement btnLogin = driver.findElement(By.xpath("//button/span[text()= 'Đăng nhập']"));
-		 txtUsername.sendKeys("bkaadmin");
-		 txtPassword.sendKeys("qazwsx");
-		 btnLogin.click();
-		 driver.findElement(By.cssSelector(".cursor-pointer")).click();
-		 Assert.assertTrue(driver.findElement(By.xpath("//div[contains(text(),'DEV Official')]")).isDisplayed());
-		 Assert.assertEquals(driver.findElement(By.xpath("//div[text() ='DEV Official ']/following-sibling::a")).getText(),"bkaadmin");
-		 driver.findElement(By.xpath("//span[text()='Danh sách nhóm']")).click();
-		 WebElement searchbox = driver.findElement(By.xpath("//input[contains(@placeholder,'Enter để tìm kiếm...')]"));
-		 searchbox.sendKeys("Khoa");
-		 Thread.sleep(3000);
-		 //searchbox.sendKeys(Keys.chord(Keys.CONTROL,"a"));
-		 searchbox.sendKeys(Keys.ENTER);
-		 Thread.sleep(3000);
-		 driver.findElement(By.cssSelector(".cursor-pointer")).click();
-		 driver.findElement(By.xpath("//a[text() = 'Đăng xuất']")).click();
+		driver.get("https://dev.ecomnet.app/");
+		WebElement txtUsername = driver.findElement(By.xpath("//input[@name = 'email']"));
+		WebElement txtPassword = driver.findElement(By.xpath("//input[@name = 'password']"));
+		WebElement btnLogin = driver.findElement(By.xpath("//button/span[text()= 'Đăng nhập']"));
+		txtUsername.sendKeys("bkaadmin");
+		txtPassword.sendKeys("qazwsx");
+		btnLogin.click();
+		driver.findElement(By.cssSelector(".cursor-pointer")).click();
+		Assert.assertTrue(driver.findElement(By.xpath("//div[contains(text(),'DEV Official')]")).isDisplayed());
+		Assert.assertEquals(
+				driver.findElement(By.xpath("//div[text() ='DEV Official ']/following-sibling::a")).getText(),
+				"bkaadmin");
+		driver.findElement(By.xpath("//span[text()='Danh sách nhóm']")).click();
+		WebElement searchbox = driver.findElement(By.xpath("//input[contains(@placeholder,'Enter để tìm kiếm...')]"));
+		searchbox.sendKeys("Khoa");
+		Thread.sleep(3000);
+		// searchbox.sendKeys(Keys.chord(Keys.CONTROL,"a"));
+		searchbox.sendKeys(Keys.ENTER);
+		Thread.sleep(3000);
+		driver.findElement(By.cssSelector(".cursor-pointer")).click();
+		driver.findElement(By.xpath("//a[text() = 'Đăng xuất']")).click();
 	}
-	//@Test
+
+	// @Test
 	public void TC_02_DefaultDropdown() throws InterruptedException {
 		driver.get("https://demo.nopcommerce.com/");
 		driver.findElement(By.xpath("//a[text() = 'Register']")).click();
@@ -69,8 +75,8 @@ public class SetUpDriver {
 		selectMonth.selectByVisibleText("February");
 		Assert.assertEquals(selectMonth.getFirstSelectedOption().getText(), "February");
 	}
-	
-	//@Test
+
+	// @Test
 	public void TC_03_CustomDropdown() throws InterruptedException {
 		driver.get("https://cmb-merchant-test2.intelnet.vn/auth/login");
 		driver.findElement(By.cssSelector("input#email")).sendKeys("test2.cmb@intelnet.vn");
@@ -79,18 +85,19 @@ public class SetUpDriver {
 		Thread.sleep(10000);
 		WebElement dropdown = driver.findElement(By.cssSelector("div.css-2b097c-container"));
 		dropdown.click();
-		List<WebElement> dropdownValue = driver.findElements(By.cssSelector("div.css-1kyev75-menu div.TableFilterInputSelect__option"));
+		List<WebElement> dropdownValue = driver
+				.findElements(By.cssSelector("div.css-1kyev75-menu div.TableFilterInputSelect__option"));
 		System.out.println(dropdownValue.size());
 		selectItem(dropdownValue, "Chi nhánh Trần Bình Trọng");
 		Assert.assertEquals(dropdown.getText(), "Chi nhánh Trần Bình Trọng");
 		Thread.sleep(3000);
 	}
-	
-	//@Test
+
+	// @Test
 	public void TC_04_HRMTest() throws InterruptedException {
 		Random rad = new Random();
 		String number = String.valueOf(rad.nextInt(9999));
-		String username = "Khoatran"+number;
+		String username = "Khoatran" + number;
 		String password = "Khoa0195@";
 		String userID;
 		driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
@@ -102,11 +109,15 @@ public class SetUpDriver {
 		driver.findElement(By.name("firstName")).sendKeys("Tran");
 		driver.findElement(By.name("middleName")).sendKeys("Dang");
 		driver.findElement(By.name("lastName")).sendKeys("aohKT");
-		userID = driver.findElement(By.xpath("//label[text()='Employee Id']/parent::div/following-sibling::div/input")).getAttribute("value");
+		userID = driver.findElement(By.xpath("//label[text()='Employee Id']/parent::div/following-sibling::div/input"))
+				.getAttribute("value");
 		driver.findElement(By.xpath("//p[text()='Create Login Details']/parent::div//span")).click();
-		driver.findElement(By.xpath("//label[contains(string(),'Username')]/parent::div/parent::div//input")).sendKeys(username);
-		driver.findElement(By.xpath("//label[contains(string(),'Password')]/parent::div/parent::div//input")).sendKeys(password);
-		driver.findElement(By.xpath("//label[contains(string(),'Confirm Password')]/parent::div/parent::div//input")).sendKeys(password);
+		driver.findElement(By.xpath("//label[contains(string(),'Username')]/parent::div/parent::div//input"))
+				.sendKeys(username);
+		driver.findElement(By.xpath("//label[contains(string(),'Password')]/parent::div/parent::div//input"))
+				.sendKeys(password);
+		driver.findElement(By.xpath("//label[contains(string(),'Confirm Password')]/parent::div/parent::div//input"))
+				.sendKeys(password);
 		driver.findElement(By.xpath("//button[contains(string(),'Save')]")).click();
 		Thread.sleep(15000);
 		driver.findElement(By.cssSelector(".oxd-userdropdown-name")).click();
@@ -116,52 +127,60 @@ public class SetUpDriver {
 		driver.findElement(By.xpath("//button[contains(string(),' Login ')]")).click();
 		driver.findElement(By.xpath("//span[text() = 'My Info']")).click();
 		Thread.sleep(2000);
-		Assert.assertEquals(driver.findElement(By.xpath("//label[text()='Employee Id']/parent::div/parent::div//input")).getAttribute("value"),userID);
+		Assert.assertEquals(driver.findElement(By.xpath("//label[text()='Employee Id']/parent::div/parent::div//input"))
+				.getAttribute("value"), userID);
 		Assert.assertEquals(driver.findElement(By.xpath("//input[@name = 'firstName']")).getAttribute("value"), "Tran");
-		Assert.assertEquals(driver.findElement(By.cssSelector("input.orangehrm-middlename")).getAttribute("value"), "Dang");
-		Assert.assertEquals(driver.findElement(By.cssSelector("input.orangehrm-lastname")).getAttribute("value"),"aohKT");
-		
+		Assert.assertEquals(driver.findElement(By.cssSelector("input.orangehrm-middlename")).getAttribute("value"),
+				"Dang");
+		Assert.assertEquals(driver.findElement(By.cssSelector("input.orangehrm-lastname")).getAttribute("value"),
+				"aohKT");
+
 	}
-	
-	//@Test
+
+	// @Test
 	public void TC_05_RadioButton() throws InterruptedException {
-		driver.get("https://material.angularjs.org/latest/demo/radioButton");	
+		driver.get("https://material.angularjs.org/latest/demo/radioButton");
 		Thread.sleep(5000);
-		List<WebElement> FavoriteFruitList = driver.findElements(By.xpath("//label[text() ='Favorite Fruit:']/parent::p/following-sibling::md-radio-group[@aria-labelledby='favoriteFruit']//md-radio-button"));
-		for(WebElement item : FavoriteFruitList) {
-			if(item.getAttribute("value").equals("Banana")) {
+		List<WebElement> FavoriteFruitList = driver.findElements(By.xpath(
+				"//label[text() ='Favorite Fruit:']/parent::p/following-sibling::md-radio-group[@aria-labelledby='favoriteFruit']//md-radio-button"));
+		for (WebElement item : FavoriteFruitList) {
+			if (item.getAttribute("value").equals("Banana")) {
 				item.click();
 			}
 		}
-		
-		Assert.assertEquals(driver.findElement(By.xpath("//label[text() ='Favorite Fruit:']/parent::p/following-sibling::md-radio-group[@aria-labelledby='favoriteFruit']//md-radio-button[@value='Banana']")).getAttribute("aria-checked"),"true");
-		
-		
+
+		Assert.assertEquals(driver.findElement(By.xpath(
+				"//label[text() ='Favorite Fruit:']/parent::p/following-sibling::md-radio-group[@aria-labelledby='favoriteFruit']//md-radio-button[@value='Banana']"))
+				.getAttribute("aria-checked"), "true");
+
 	}
-	
-	//@Test 
-	public void TC_06_DefaultCheckBoxJsExcutor() throws InterruptedException{
+
+	// @Test
+	public void TC_06_DefaultCheckBoxJsExcutor() throws InterruptedException {
 		driver.get("https://material.angularjs.org/latest/demo/checkbox");
-		WebElement checkbox1 = driver.findElement(By.xpath("//legend[text()='Using <ng-model>']/parent::fieldset//md-checkbox[@aria-label='Checkbox 1']"));
+		WebElement checkbox1 = driver.findElement(By
+				.xpath("//legend[text()='Using <ng-model>']/parent::fieldset//md-checkbox[@aria-label='Checkbox 1']"));
 		Thread.sleep(1000);
 		Assert.assertEquals(checkbox1.getAttribute("aria-checked"), "true");
-		WebElement checkbox2 = driver.findElement(By.xpath("//legend[text()='Using <ng-model>']/parent::fieldset//md-checkbox[@aria-label='Checkbox 2']"));
+		WebElement checkbox2 = driver.findElement(By
+				.xpath("//legend[text()='Using <ng-model>']/parent::fieldset//md-checkbox[@aria-label='Checkbox 2']"));
 		Assert.assertEquals(checkbox2.getAttribute("aria-checked"), "false");
 		jsExcutor.executeScript("arguments[0].click();", checkbox2);
 		Thread.sleep(1000);
 		Assert.assertEquals(checkbox2.getAttribute("aria-checked"), "true");
-		WebElement checkboxDisable =  driver.findElement(By.xpath("//legend[text()='Using <ng-model>']/parent::fieldset//md-checkbox[@aria-label='Disabled checkbox']"));
+		WebElement checkboxDisable = driver.findElement(By.xpath(
+				"//legend[text()='Using <ng-model>']/parent::fieldset//md-checkbox[@aria-label='Disabled checkbox']"));
 	}
-	
-	//@Test
+
+	// @Test
 	public void TC_07_HandleAlert() throws InterruptedException {
-		driver.get("https://demo.automationtesting.in/Alerts.html");	
-		//demo alert with only OK button
+		driver.get("https://demo.automationtesting.in/Alerts.html");
+		// demo alert with only OK button
 		driver.findElement(By.cssSelector("button.btn-danger")).click();
 		Assert.assertEquals(driver.switchTo().alert().getText(), "I am an alert box!");
 		driver.switchTo().alert().accept();
-		
-		//demo alert with OK and Cancel button
+
+		// demo alert with OK and Cancel button
 		driver.findElement(By.xpath("//a[text()='Alert with OK & Cancel ']")).click();
 		driver.findElement(By.cssSelector("button.btn-primary")).click();
 		driver.switchTo().alert().accept();
@@ -169,8 +188,8 @@ public class SetUpDriver {
 		driver.findElement(By.cssSelector("button.btn-primary")).click();
 		driver.switchTo().alert().dismiss();
 		Assert.assertTrue(driver.findElement(By.xpath("//p[contains(text(), 'You Pressed Cancel')]")).isDisplayed());
-		
-		//deomo alert with textbox
+
+		// deomo alert with textbox
 		driver.findElement(By.xpath("//a[text()='Alert with Textbox ']")).click();
 		driver.findElement(By.cssSelector("button.btn-info")).click();
 		driver.switchTo().alert().sendKeys("HI");
@@ -181,31 +200,31 @@ public class SetUpDriver {
 		String actual = driver.findElement(By.cssSelector("p#demo1")).getText();
 		System.out.println(actual);
 		Assert.assertEquals(actual, expectedString);
-		
+
 	}
-	
-	
-	//@Test
+
+	// @Test
 	public void TC_08_Action() {
 		driver.get("https://www.fahasa.com/");
 		act.moveToElement(driver.findElement(By.cssSelector("span.icon_menu"))).perform();
 		act.moveToElement(driver.findElement(By.xpath("//span[text() = 'Sách Trong Nước' ]"))).perform();
-		jsExcutor.executeScript("arguments[0].click();", driver.findElement(By.xpath("//div[@class = 'dropdown-menu-inner']//span[text() ='KINH TẾ']/ancestor::h3/following-sibling::ul//a[text() ='Quản Trị - Lãnh Đạo']")));
+		jsExcutor.executeScript("arguments[0].click();", driver.findElement(By.xpath(
+				"//div[@class = 'dropdown-menu-inner']//span[text() ='KINH TẾ']/ancestor::h3/following-sibling::ul//a[text() ='Quản Trị - Lãnh Đạo']")));
 		Assert.assertTrue(driver.findElement(By.xpath("//strong[text() = 'Quản Trị - Lãnh Đạo']")).isDisplayed());
-		
+
 	}
-	
-	//@Test
+
+	// @Test
 	public void TC_09_Popup() throws InterruptedException {
-		driver.get("https://ngoaingu24h.vn/");	
+		driver.get("https://ngoaingu24h.vn/");
 		Thread.sleep(2000);
 		driver.findElement(By.cssSelector("button.login_")).click();
 		Thread.sleep(2000);
 		Assert.assertTrue(driver.findElement(By.cssSelector("div#modal-login-v1.modal.fade.in")).isDisplayed());
-	
+
 	}
-	
-	//@Test
+
+	// @Test
 	public void TC10_Popup2() throws InterruptedException {
 		driver.get("https://dev.ecomnet.app/");
 		WebElement txtUsername = driver.findElement(By.xpath("//input[@name = 'email']"));
@@ -222,8 +241,8 @@ public class SetUpDriver {
 		driver.findElement(By.cssSelector("input[placeholder = 'Tên nhóm']")).sendKeys("Group Test");
 		driver.findElement(By.xpath("//span[text() ='Tạo nhóm']")).click();
 	}
-	
-	//@Test
+
+	// @Test
 	public void TC_11_HandelDropdownECN() throws InterruptedException {
 		driver.get("https://dev.ecomnet.app/");
 		WebElement txtUsername = driver.findElement(By.xpath("//input[@name = 'email']"));
@@ -243,15 +262,15 @@ public class SetUpDriver {
 		String listId = splitAndConcatString(id);
 		String xpath = "//div[contains(@id , '" + listId + "') and @aria-hidden = 'false']//li/span";
 		System.out.println(xpath);
-		List<WebElement> typeList =  driver.findElements(By.xpath(xpath));
+		List<WebElement> typeList = driver.findElements(By.xpath(xpath));
 		System.out.println(typeList.size());
-		selectItem(typeList,"Riêng tư");
-		Assert.assertEquals(DropdownType.getAttribute("value"),"Riêng tư");
+		selectItem(typeList, "Riêng tư");
+		Assert.assertEquals(DropdownType.getAttribute("value"), "Riêng tư");
 		driver.findElement(By.xpath("//span[text() = ' Lưu ']")).click();
 		Thread.sleep(3000);
 	}
-	
-	//@Test
+
+	// @Test
 	public void TC_12_HandlePopupECN2() throws InterruptedException {
 		driver.get("https://dev.ecomnet.app/");
 		WebElement txtUsername = driver.findElement(By.xpath("//input[@name = 'email']"));
@@ -263,12 +282,14 @@ public class SetUpDriver {
 		driver.findElement(By.xpath("//span[text() = 'Thư viện số']")).click();
 		driver.findElement(By.xpath("//span[text() = 'Danh sách nội dung số']")).click();
 		Thread.sleep(1000);
-		Assert.assertFalse(driver.findElement(By.cssSelector("div#kt_modal_new_media div.modal-content")).isDisplayed());
+		Assert.assertFalse(
+				driver.findElement(By.cssSelector("div#kt_modal_new_media div.modal-content")).isDisplayed());
 		driver.findElement(By.xpath("//button[text() = ' Thêm mới ']")).click();
 		Thread.sleep(500);
 		Assert.assertTrue(driver.findElement(By.cssSelector("div#kt_modal_new_media div.modal-content")).isDisplayed());
 		driver.findElement(By.cssSelector("input[placeholder = 'Tiêu đề...']")).sendKeys("Media text");
-		WebElement typeDropdown = driver.findElement(By.xpath("//span[text() ='Định dạng']/parent::label/following-sibling::div[@class = 'el-select']//input"));
+		WebElement typeDropdown = driver.findElement(By.xpath(
+				"//span[text() ='Định dạng']/parent::label/following-sibling::div[@class = 'el-select']//input"));
 		String typeDropdownId = typeDropdown.getAttribute("id");
 		typeDropdown.click();
 		String typeListId = splitAndConcatString(typeDropdownId);
@@ -279,11 +300,12 @@ public class SetUpDriver {
 		Thread.sleep(500);
 		driver.findElement(By.cssSelector("div#kt_modal_new_media_close span")).click();
 		Thread.sleep(500);
-		Assert.assertFalse(driver.findElement(By.cssSelector("div#kt_modal_new_media div.modal-content")).isDisplayed());
-		
+		Assert.assertFalse(
+				driver.findElement(By.cssSelector("div#kt_modal_new_media div.modal-content")).isDisplayed());
+
 	}
-	
-	//@Test
+
+	// @Test
 	public void TC_13_Handle_Popup_Not_In_DOM_TIKI() throws InterruptedException {
 		driver.get("https://tiki.vn/");
 		By popupCss = By.cssSelector("div[role ='dialog']");
@@ -295,30 +317,34 @@ public class SetUpDriver {
 		driver.findElement(By.cssSelector("p.login-with-email")).click();
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//button[text() = 'Đăng nhập']")).click();
-		Assert.assertTrue(driver.findElement(By.xpath("//span[@class = 'error-mess' and text() = 'Email không được để trống']")).isDisplayed());
-		Assert.assertTrue(driver.findElement(By.xpath("//span[@class = 'error-mess' and text() = 'Mật khẩu không được để trống']")).isDisplayed());
+		Assert.assertTrue(
+				driver.findElement(By.xpath("//span[@class = 'error-mess' and text() = 'Email không được để trống']"))
+						.isDisplayed());
+		Assert.assertTrue(driver
+				.findElement(By.xpath("//span[@class = 'error-mess' and text() = 'Mật khẩu không được để trống']"))
+				.isDisplayed());
 		Thread.sleep(1000);
 	}
-	
-	//@Test
+
+	// @Test
 	public void TC_14_Handle_Random_Popup() throws InterruptedException {
 		driver.get("https://dehieu.vn/");
 		Thread.sleep(6000);
-		if(driver.findElement(By.cssSelector("div.modal-dialog div.modal-content")).isDisplayed()) {
+		if (driver.findElement(By.cssSelector("div.modal-dialog div.modal-content")).isDisplayed()) {
 			driver.findElement(By.cssSelector(" button.close")).click();
 			Thread.sleep(1000);
 		}
-		
+
 		driver.findElement(By.xpath("//a[text() =' Tất cả khóa học']")).click();
 		Thread.sleep(1000);
 		driver.findElement(By.cssSelector("input.search-form")).sendKeys("Thiết kế tủ điện");
 		driver.findElement(By.cssSelector("button.header-search")).click();
 		Thread.sleep(1000);
 		Assert.assertEquals(driver.findElements(By.cssSelector("div.course-item-image")).size(), 1);
-		
+
 	}
-	
-	//@Test
+
+	// @Test
 	public void TC_15_Handle_Frame() throws InterruptedException {
 		driver.get("https://skills.kynaenglish.vn/");
 		driver.switchTo().frame(driver.findElement(By.cssSelector("iframe#cs_chat_iframe")));
@@ -331,10 +357,10 @@ public class SetUpDriver {
 		driver.switchTo().defaultContent();
 		Assert.assertTrue(driver.findElement(By.cssSelector("div.fancybox-skin")).isDisplayed());
 	}
-	
-	@Test
+
+	//@Test
 	public void TC_16_Handle_Tab() throws InterruptedException {
-		driver.get("https://automationfc.github.io/basic-form/");	
+		driver.get("https://automationfc.github.io/basic-form/");
 		driver.findElement(By.xpath("//a[text() = 'GOOGLE']")).click();
 		switchToWindown("Google");
 		driver.findElement(By.xpath("//textarea[@name = 'q']")).sendKeys("Khoa");
@@ -349,49 +375,57 @@ public class SetUpDriver {
 		closeWindown("Selenium WebDriver");
 		Thread.sleep(3000);
 	}
+	
+	@Test
+	public void TC_17_UploadFile() throws InterruptedException {
+		driver.get("https://blueimp.github.io/jQuery-File-Upload/");
+		By addFileButton = By.xpath("//input[@type = 'file']");
+		driver.findElement(addFileButton).sendKeys( projectPath+"\\uploadFile\\image1.jpg");
+		Thread.sleep(5000);
+		driver.findElement(addFileButton).sendKeys( projectPath+"\\uploadFile\\image1.jpg" + "\n" + projectPath+"\\uploadFile\\images2.jpg");
+		Thread.sleep(5000);
+	}
 
 	@AfterClass
 	public void afterClass() {
 		driver.quit();
 	}
-	
+
 	public String splitAndConcatString(String string) {
 		String[] output = string.split("-");
 		String result = output[0].concat("-").concat(output[1]).concat("-").concat(output[2]);
 		return result;
-		
+
 	}
+
 	public void selectItem(List<WebElement> itemList, String itemValue) {
-		for(WebElement item : itemList) {
-			if(item.getText().equals(itemValue)) {
+		for (WebElement item : itemList) {
+			if (item.getText().equals(itemValue)) {
 				jsExcutor.executeScript("arguments[0].click()", item);
 				break;
 			}
 		}
 	}
-	
-	
+
 	public void switchToWindown(String pageTitle) {
 		Set<String> allPageID = driver.getWindowHandles();
 		for (String id : allPageID) {
 			driver.switchTo().window(id);
-			if(driver.getTitle().equals(pageTitle)) {
+			if (driver.getTitle().equals(pageTitle)) {
 				break;
 			}
 		}
 	}
-	
+
 	public void closeWindown(String pageTitle) {
 		Set<String> allPageID = driver.getWindowHandles();
 		for (String id : allPageID) {
 			driver.switchTo().window(id);
-			if(!driver.getTitle().equals(pageTitle)) {
+			if (!driver.getTitle().equals(pageTitle)) {
 				driver.close();
 			}
 		}
-		
+
 	}
-	
+
 }
-
-
