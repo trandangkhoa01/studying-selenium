@@ -6,6 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="testng"/>
 	<classpathentry kind="lib" path="libraries/testng-6.14.3.jar"/>
 	<classpathentry kind="lib" path="libraries/selenium-server-standalone-3.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>

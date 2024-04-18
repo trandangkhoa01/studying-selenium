@@ -1,10 +1,12 @@
 package WebDriver;
 
+import java.io.File;
 //import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -12,7 +14,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -23,10 +27,23 @@ public class SetUpDriver {
 	String projectPath = System.getProperty("user.dir");
 	JavascriptExecutor jsExcutor;
 	Actions act;
-
+	String OS = System.getProperty("os.name");
+	String image1 = "image1.jpg";
+	String image2 = "images2.jpg";
+	String image3 = "images3.jpg";
+	String image4 = "images4.jpg";
+	String image1Path = projectPath + File.separator + "uploadFile" + File.separator + image1;
+	String image2Path = projectPath + File.separator + "uploadFile" + File.separator + image2;
+	String image3Path = projectPath + File.separator + "uploadFile" + File.separator + image3;
+	String image4Path = projectPath + File.separator + "uploadFile" + File.separator + image4;
+	
 	@BeforeClass
 	public void beforeClass() {
-		System.setProperty("webdriver.edge.driver", projectPath + "\\webDriver\\msedgedriver.exe");
+		if(OS.contains("Mac OS")){
+			System.setProperty("webdriver.edge.driver", projectPath + "/webDriver/msedgedriver");
+		}else {
+			System.setProperty("webdriver.edge.driver", projectPath + "\\webDriver\\msedgedriver.exe");
+		}
 		driver = new EdgeDriver();
 		jsExcutor = (JavascriptExecutor) driver;
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
@@ -377,19 +394,51 @@ public class SetUpDriver {
 	}
 	
 	@Test
-	public void TC_17_UploadFile() throws InterruptedException {
+	public void TC_17_UploadFile(){
 		driver.get("https://blueimp.github.io/jQuery-File-Upload/");
 		By addFileButton = By.xpath("//input[@type = 'file']");
-		driver.findElement(addFileButton).sendKeys( projectPath+"\\uploadFile\\image1.jpg");
-		Thread.sleep(5000);
-		driver.findElement(addFileButton).sendKeys( projectPath+"\\uploadFile\\image1.jpg" + "\n" + projectPath+"\\uploadFile\\images2.jpg");
-		Thread.sleep(5000);
+		driver.findElement(addFileButton).sendKeys(image1Path);
+		sleepInSecon(3);
+		Assert.assertTrue(driver.findElement(By.xpath("//p[@class = 'name' and text() = '"+image1+"']")).isDisplayed());
+		driver.findElement(addFileButton).sendKeys( image2Path + "\n" + image3Path + "\n"+ image4Path);
+		sleepInSecon(3);
+
+		List<WebElement> files = driver.findElements(By.cssSelector("tbody button.start"));
+		Assert.assertTrue(files.size()>0);
+		
+		for (WebElement item : files) {
+			item.click();
+			sleepInSecon(3);
+		}
+		Assert.assertTrue(driver.findElement(By.xpath("//p[@class = 'name']/a[text() = '"+image1+"']")).isDisplayed());
+		sleepInSecon(3);
+		Assert.assertTrue(isImageLoaded("//a[@title ='"+image1+"'] /img"));
 	}
 
 	@AfterClass
 	public void afterClass() {
 		driver.quit();
 	}
+	
+	public boolean isPageLoadedSuccess() {
+		WebDriverWait explicitWait = new WebDriverWait(driver, 30);
+		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+		ExpectedCondition<Boolean> jQueryLoad = new ExpectedCondition<Boolean>() {
+			@Override
+			public Boolean apply(WebDriver driver) {
+				return (Boolean) jsExecutor.executeScript("return (window.jQuery != null) && (jQuery.active === 0);");
+			}
+		};
+
+		ExpectedCondition<Boolean> jsLoad = new ExpectedCondition<Boolean>() {
+			@Override
+			public Boolean apply(WebDriver driver) {
+				return jsExecutor.executeScript("return document.readyState").toString().equals("complete");
+			}
+		};
+		return explicitWait.until(jQueryLoad) && explicitWait.until(jsLoad);
+	}
+
 
 	public String splitAndConcatString(String string) {
 		String[] output = string.split("-");
@@ -426,6 +475,23 @@ public class SetUpDriver {
 			}
 		}
 
+	}
+	public boolean isImageLoaded(String locator) {
+		boolean status = (boolean) jsExcutor.executeScript("return arguments[0].complete && typeof arguments[0].naturalWidth != 'undefined && arguments[0].naturalWidth >0'", getElement(locator));
+		return status;
+	}
+	public WebElement getElement(String locator) {
+		WebElement element= driver.findElement(By.xpath(locator));
+		return element;
+	}
+	
+	public void sleepInSecon(int second) {
+		try {
+			Thread.sleep(second*1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
