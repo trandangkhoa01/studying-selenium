@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite parallel="false" name="Suite">
+ <parameter name ="url" value ="FaCEbOOK" />
+  <test name="Run round 1">
+  	<parameter name ="browser" value ="Edge" />
+    <classes>
+      <class name="anotation2.NewTest"/>
+    </classes>
+  </test> 
+    
+
+</suite> 

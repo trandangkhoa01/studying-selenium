@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite parallel="false" name="Suite">
+	<suite-files>
+		<suite-file path = "runTC1" />
+		<suite-file path = "runTestcases" />
+	</suite-files> <!-- Suite -->
+</suite>
